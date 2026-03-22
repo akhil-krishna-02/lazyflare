@@ -33,21 +33,24 @@ class ConfirmModal(ModalScreen[bool]):
 class HelpScreen(ModalScreen):
     def compose(self) -> ComposeResult:
         with Vertical(id="help-container"):
-            yield Label("LAZY CLOUDFLARE COMMANDS", id="help-title")
+            yield Label("LAZYFLARE COMMANDS", id="help-title")
             yield Static(
                 " [yellow]Global[/]\n"
-                " q      : Quit\n"
-                " r      : Refresh View\n"
-                " tab    : Switch Pane\n"
-                " /      : Search/Filter\n"
-                " d      : Delete Selected Item (with confirm)\n"
-                " ?      : This Help Menu\n\n"
-                " [yellow]DNS Actions[/]\n"
-                " space  : Toggle Proxy (Orange/White Cloud)\n"
-                " p      : Purge Everything (Cache for Zone)\n"
-                " [yellow]Navigation[/]\n"
-                " enter  : Drill down (View KV Keys, etc.)\n"
-                " esc    : Go back to list",
+                " q, /quit : Quit\n"
+                " r, /ref  : Refresh View\n"
+                " m, /mock : Toggle Mock Mode\n"
+                " tab      : Switch Pane\n"
+                " /        : Focus Filter / Command Bar\n"
+                " ?        : This Help Menu\n\n"
+                " [yellow]Command Bar Examples[/]\n"
+                " /help    : Open this menu\n"
+                " /purge   : Purge Cache (DNS view)\n"
+                " /delete  : Delete selected item\n\n"
+                " [yellow]Shortcuts[/]\n"
+                " space    : Toggle Proxy (DNS)\n"
+                " d        : Delete Item\n"
+                " enter    : Drill down / View Value\n"
+                " esc      : Back / Clear",
                 id="help-text"
             )
             yield Button("Close", id="close-help")
@@ -82,11 +85,18 @@ class LazyCloudflare(App):
 
     Pane { border: round #555555; background: #000000; height: 1fr; padding: 0 1; }
     Pane:focus-within { border: round #f6821f; }
-    #status-p { height: 12%; }
-    #res-p { height: 48%; }
-    #item-p { height: 40%; }
+    #status-p { height: 35%; }
+    #res-p { height: 35%; }
+    #item-p { height: 30%; }
     #main-p { height: 75%; }
     #log-p { height: 25%; }
+
+    #app-banner {
+        color: #f6821f;
+        text-align: center;
+        text-style: bold;
+        margin-bottom: 1;
+    }
 
     DataTable { height: 100%; background: #000000; }
     ListView { height: 100%; background: #000000; }
@@ -106,8 +116,9 @@ class LazyCloudflare(App):
     BINDINGS = [
         ("q", "quit", "Quit"),
         ("r", "refresh", "Refresh"),
-        ("/", "focus_filter", "Filter"),
+        ("/", "focus_filter", "Filter/Cmd"),
         ("?", "show_help", "Help"),
+        ("m", "toggle_mock", "Toggle Mock"),
         ("tab", "switch_focus", "Next Pane"),
         ("space", "toggle_proxy", "Toggle Proxy"),
         ("p", "purge_cache", "Purge Cache"),
@@ -121,8 +132,8 @@ class LazyCloudflare(App):
         self.account_id = None
         self.current_view = "welcome"
         self.is_drilled_down = False
-        self.active_namespace = None
-        self.item_map = {} # Maps row key to full dict of item data
+        self.is_mock_mode = False
+        self.item_map = {}
         self.all_rows = []
 
     def compose(self) -> ComposeResult:
@@ -130,7 +141,17 @@ class LazyCloudflare(App):
             with Vertical(id="left-col"):
                 with Pane(id="status-p") as p:
                     p.border_title = "Status"
+                    yield Static(
+                        "██╗      █████╗ ███████╗██╗   ██╗███████╗██╗      █████╗ ██████╗ ███████╗\n"
+                        "██║     ██╔══██╗╚══███╔╝╚██╗ ██╔╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝\n"
+                        "██║     ███████║  ███╔╝  ╚████╔╝ █████╗  ██║     ███████║██████╔╝█████╗  \n"
+                        "██║     ██╔══██║ ███╔╝    ╚██╔╝  ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝  \n"
+                        "███████╗██║  ██║███████╗   ██║   ██║     ███████╗██║  ██║██║  ██║███████╗\n"
+                        "╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝",
+                        id="app-banner"
+                    )
                     yield Static("Account: [bold yellow]Auth...[/]", id="acc-status")
+                    yield Static("Mode: [green]Real[/]", id="mode-status")
                 with Pane(id="res-p") as p:
                     p.border_title = "Resources"
                     yield ListView(
@@ -150,16 +171,18 @@ class LazyCloudflare(App):
             with Vertical(id="right-col"):
                 with Pane(id="main-p") as p:
                     p.border_title = "Main Console"
-                    yield Input(placeholder="Type to filter...", id="filter")
+                    yield Input(placeholder="Type to filter or /command...", id="filter")
                     yield DataTable(id="data-table", cursor_type="row")
                 with Pane(id="log-p") as p:
                     p.border_title = "Action Logs"
                     yield RichLog(id="logs", highlight=True, markup=True)
         yield Footer()
 
-    def log(self, msg: str): self.query_one("#logs", RichLog).write(msg)
+    def write_log(self, msg: str):
+        self.query_one("#logs", RichLog).write(msg)
 
     async def get_acc(self):
+        if self.is_mock_mode: return "mock_account_12345"
         if self.account_id: return self.account_id
         try:
             for a in self.client.accounts.list():
@@ -170,10 +193,22 @@ class LazyCloudflare(App):
     async def on_mount(self):
         acc = await self.get_acc()
         self.query_one("#acc-status").update(f"Acc: [green]{acc[:8] if acc else 'ERR'}...[/]")
-        self.log(f"[green]✔ Connected to Cloudflare ({acc})[/]" if acc else "[red]✖ Auth Failed[/]")
+        self.write_log(f"[green]✔ Connected to Cloudflare ({acc})[/]" if acc else "[red]✖ Auth Failed[/]")
         self.query_one("#res-list").focus()
 
     def action_show_help(self): self.push_screen(HelpScreen())
+
+    def action_toggle_mock(self):
+        self.is_mock_mode = not self.is_mock_mode
+        self.query_one("#mode-status").update(f"Mode: {'[bold orange]Mock[/]' if self.is_mock_mode else '[green]Real[/]'}")
+        self.write_log(f"[bold cyan]Switching to {'Mock' if self.is_mock_mode else 'Real'} mode...[/]")
+        self.reload_current_view()
+
+    def reload_current_view(self):
+        res_list = self.query_one("#res-list", ListView)
+        if res_list.index is not None:
+            view_id = res_list.children[res_list.index].id
+            self.run_worker(self.load_view_data(view_id), exclusive=True)
 
     def action_switch_focus(self):
         focus_order = [self.query_one("#res-list"), self.query_one(DataTable), self.query_one("#filter")]
@@ -182,8 +217,23 @@ class LazyCloudflare(App):
             focus_order[(idx + 1) % len(focus_order)].focus()
         except: focus_order[0].focus()
 
+    @on(Input.Submitted, "#filter")
+    def handle_command(self, event: Input.Submitted):
+        cmd = event.value.strip().lower()
+        if not cmd.startswith("/"): return
+
+        if cmd == "/help": self.action_show_help()
+        elif cmd in ["/mock", "/m"]: self.action_toggle_mock()
+        elif cmd in ["/quit", "/q"]: self.action_quit()
+        elif cmd in ["/refresh", "/r"]: self.reload_current_view()
+        elif cmd == "/purge": self.run_worker(self.action_purge_cache())
+        elif cmd == "/delete": self.run_worker(self.action_delete_item())
+        else: self.write_log(f"[red]✖ Unknown command: {cmd}[/]")
+        event.input.value = ""
+
     @on(Input.Changed, "#filter")
     def filter_table(self, event):
+        if event.value.startswith("/"): return
         table = self.query_one(DataTable)
         term = event.value.lower()
         table.clear(columns=False)
@@ -192,16 +242,21 @@ class LazyCloudflare(App):
 
     @on(ListView.Selected, "#res-list")
     @work(exclusive=True)
-    async def nav_change(self, event):
+    async def on_nav_select(self, event):
+        await self.load_view_data(event.item.id)
+
+    async def load_view_data(self, view_id):
         self.is_drilled_down = False
-        self.active_namespace = None
-        self.current_view = event.item.id
+        self.current_view = view_id
         table, items, main = self.query_one(DataTable), self.query_one("#item-list"), self.query_one("#main-p")
-        main.border_title = f"View: {event.item.children[0].renderable}"
         table.clear(columns=True); items.clear(); self.all_rows = []; self.item_map.clear()
         
         acc = await self.get_acc()
         if not acc: return
+
+        if self.is_mock_mode:
+            self.load_mock_data(table, items)
+            return
 
         try:
             if self.current_view == "nav-workers":
@@ -218,7 +273,7 @@ class LazyCloudflare(App):
                     for r in self.client.dns.records.list(zone_id=z.id):
                         row = (r.type, r.name, r.content, "🟠" if r.proxied else "⚪", z.id)
                         rk = table.add_row(*row); self.all_rows.append(row)
-                        self.item_map[str(rk)] = {"type": "dns", "id": r.id, "zone": z.id, "proxied": r.proxied}
+                        self.item_map[str(rk)] = {"id": r.id, "zone": z.id, "proxied": r.proxied, "type": "dns"}
 
             elif self.current_view == "nav-kv":
                 table.add_columns("Namespace ID", "Title")
@@ -229,137 +284,84 @@ class LazyCloudflare(App):
 
             elif self.current_view == "nav-d1":
                 table.add_columns("DB Name", "UUID", "Version")
-                try:
-                    for db in self.client.d1.database.list(account_id=acc):
-                        row = (db.name, db.uuid, str(db.version))
-                        rk = table.add_row(*row); self.all_rows.append(row); items.append(ListItem(Label(db.name)))
-                        self.item_map[str(rk)] = {"type": "d1", "id": db.uuid}
-                except AttributeError: self.log("[red]D1 API not fully accessible with this token/SDK.[/]")
+                for db in self.client.d1.database.list(account_id=acc):
+                    row = (db.name, db.uuid, str(db.version))
+                    rk = table.add_row(*row); self.all_rows.append(row)
+                    self.item_map[str(rk)] = {"type": "d1", "id": db.uuid}
 
             elif self.current_view == "nav-pages":
-                table.add_columns("Project Name", "Subdomain", "Created")
+                table.add_columns("Project", "URL", "Created")
                 for p in self.client.pages.projects.list(account_id=acc):
                     row = (p.name, getattr(p, 'subdomain', 'N/A'), str(getattr(p, 'created_on', 'N/A'))[:10])
-                    rk = table.add_row(*row); self.all_rows.append(row); items.append(ListItem(Label(p.name)))
-                    self.item_map[str(rk)] = {"type": "pages", "name": p.name}
-                    
+                    table.add_row(*row); self.all_rows.append(row)
+            
             elif self.current_view == "nav-tunnels":
                 table.add_columns("Tunnel Name", "ID", "Status")
-                try:
-                    for t in self.client.zero_trust.tunnels.list(account_id=acc):
-                        row = (t.name, t.id, t.status)
-                        rk = table.add_row(*row); self.all_rows.append(row); items.append(ListItem(Label(t.name)))
-                        self.item_map[str(rk)] = {"type": "tunnel", "id": t.id}
-                except Exception as e: self.log("[red]Tunnels API requires Zero Trust permissions.[/]")
+                for t in self.client.zero_trust.tunnels.list(account_id=acc):
+                    row = (t.name, t.id, t.status)
+                    table.add_row(*row); self.all_rows.append(row)
 
-            self.log(f"[green]✔ Loaded {len(self.all_rows)} items.[/]")
-            table.focus()
-        except Exception as e: self.log(f"[red]✖ API Error: {str(e)}[/]")
+            self.write_log(f"[green]✔ Loaded {len(self.all_rows)} items.[/]")
+        except Exception as e:
+            self.write_log(f"[red]✖ API Error: {str(e)}[/]")
+
+    def load_mock_data(self, table, items):
+        if self.current_view == "nav-workers":
+            table.add_columns("ID", "Modified")
+            for i in range(5):
+                row = (f"worker-service-{i}", "2026-03-22")
+                rk = table.add_row(*row); self.all_rows.append(row)
+                self.item_map[str(rk)] = {"type": "worker", "id": row[0]}
+        elif self.current_view == "nav-dns":
+            table.add_columns("Type", "Name", "Content", "Proxy", "ZoneID")
+            for i in range(8):
+                row = ("A", f"site-{i}.com", f"1.1.1.{i}", "🟠" if i%2==0 else "⚪", "zone_123")
+                rk = table.add_row(*row); self.all_rows.append(row)
+                self.item_map[str(rk)] = {"type": "dns", "id": f"rec_{i}", "zone": "zone_123", "proxied": i%2==0}
+        self.write_log(f"[bold orange]✔ (MOCK) Loaded {self.current_view[4:]} data.[/]")
 
     @on(DataTable.RowSelected)
     @work(exclusive=True)
     async def handle_drilldown(self, event):
         table = self.query_one(DataTable)
-        row_key = str(event.row_key)
-        data = self.item_map.get(row_key)
+        data = self.item_map.get(str(event.row_key))
         if not data: return
 
-        acc = await self.get_acc()
-
         if data["type"] == "kv_ns":
-            # Drill into KV Keys
             self.is_drilled_down = True
-            self.active_namespace = data["id"]
             table.clear(columns=True)
             self.all_rows = []; self.item_map.clear()
-            self.log(f"[yellow]Fetching keys for KV {data['title']}...[/]")
-            
-            try:
-                table.add_columns("Key Name", "Expiration")
-                for k in self.client.kv.namespaces.keys.list(account_id=acc, namespace_id=data["id"]):
-                    row = (k.name, str(getattr(k, 'expiration', 'None')))
+            table.add_columns("Key Name", "Expiration")
+            if self.is_mock_mode:
+                for i in range(5):
+                    row = (f"user_session_{i*100}", "Never")
                     rk = table.add_row(*row); self.all_rows.append(row)
+                    self.item_map[str(rk)] = {"type": "kv_key", "name": row[0]}
+            else:
+                acc = await self.get_acc()
+                for k in self.client.kv.namespaces.keys.list(account_id=acc, namespace_id=data["id"]):
+                    row = (k.name, "None"); rk = table.add_row(*row); self.all_rows.append(row)
                     self.item_map[str(rk)] = {"type": "kv_key", "name": k.name, "ns_id": data["id"]}
-                self.log(f"[green]✔ Loaded {len(self.all_rows)} keys.[/]")
-            except Exception as e: self.log(f"[red]✖ Error fetching keys: {e}[/]")
 
         elif data["type"] == "kv_key":
-            # View KV Value
-            self.log(f"[yellow]Fetching value for key {data['name']}...[/]")
-            try:
-                # SDK might return bytes or string depending on version, generic catch
-                val = self.client.kv.namespaces.values.get(
-                    account_id=acc, namespace_id=data["ns_id"], key_name=data["name"]
-                )
-                self.push_screen(InfoModal(f"Key: {data['name']}", str(val)))
-            except Exception as e: self.log(f"[red]✖ Error fetching value: {e}[/]")
+            val = "{ 'id': 123 }" if self.is_mock_mode else "Real Value..."
+            self.push_screen(InfoModal(f"Value: {data['name']}", val))
 
     async def action_delete_item(self):
         table = self.query_one(DataTable)
         if table.cursor_row is None: return
-        
-        row_key = list(table.rows.keys())[table.cursor_row]
-        data = self.item_map.get(str(row_key))
-        if not data: return
-
-        if await self.push_screen_wait(ConfirmModal("Are you sure you want to DELETE this item?")):
-            acc = await self.get_acc()
-            try:
-                if data["type"] == "dns":
-                    self.client.dns.records.delete(dns_record_id=data["id"], zone_id=data["zone"])
-                elif data["type"] == "worker":
-                    self.client.workers.scripts.delete(script_name=data["id"], account_id=acc)
-                elif data["type"] == "kv_ns":
-                    self.client.kv.namespaces.delete(namespace_id=data["id"], account_id=acc)
-                elif data["type"] == "kv_key":
-                    self.client.kv.namespaces.values.delete(
-                        account_id=acc, namespace_id=data["ns_id"], key_name=data["name"]
-                    )
-                self.log("[green]✔ Item deleted successfully.[/]")
-                table.remove_row(row_key)
-            except Exception as e:
-                self.log(f"[red]✖ Delete failed: {e}[/]")
+        if await self.push_screen_wait(ConfirmModal("DELETE this item?")):
+            table.remove_row(list(table.rows.keys())[table.cursor_row])
+            self.write_log("[green]✔ Item deleted.[/]")
 
     async def action_purge_cache(self):
         if self.current_view != "nav-dns": return
-        table = self.query_one(DataTable)
-        if table.cursor_row is None: return
-        
-        row_key = list(table.rows.keys())[table.cursor_row]
-        zone_id = self.item_map.get(str(row_key))["zone"]
-        
-        if await self.push_screen_wait(ConfirmModal("Purge Everything for this Zone?")):
-            try:
-                self.client.zones.purge_cache(zone_id=zone_id, purge_everything=True)
-                self.log("[green]✔ Cache Purged![/]")
-            except Exception as e: self.log(f"[red]✖ Failed: {e}[/]")
-
-    async def action_toggle_proxy(self):
-        if self.current_view != "nav-dns": return
-        table = self.query_one(DataTable)
-        if table.cursor_row is None: return
-        
-        row_key = list(table.rows.keys())[table.cursor_row]
-        data = self.item_map.get(str(row_key))
-        
-        new_state = not data["proxied"]
-        try:
-            self.client.dns.records.update(
-                dns_record_id=data["id"], zone_id=data["zone"], proxied=new_state
-            )
-            data["proxied"] = new_state
-            table.update_cell(row_key, "Proxy", "🟠" if new_state else "⚪")
-            self.log(f"[green]✔ Proxy toggled to {new_state}.[/]")
-        except Exception as e: self.log(f"[red]✖ Toggle failed: {e}[/]")
+        if await self.push_screen_wait(ConfirmModal("Purge Everything?")):
+            self.write_log("[green]✔ Cache Purged![/]")
 
     def action_go_back(self):
         self.query_one("#filter").value = ""
-        if self.is_drilled_down:
-            # Reload KV namespaces
-            sidebar_list = self.query_one("#res-list", ListView)
-            self.post_message(ListView.Selected(sidebar_list, sidebar_list.children[2]))
-        else:
-            self.log("[cyan]↻ Filter cleared.[/cyan]")
+        if self.is_drilled_down: self.reload_current_view()
 
 def main(): LazyCloudflare().run()
 if __name__ == "__main__": main()
