@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "lazyflare"
 version = "2.0.0"
 authors = [
-  { name="Akhil Krishna", email="your.email@example.com" },
+  { name="AKHIL KRISHNA YADAV GORLA", email="akhilkrishnayadav59@gmail.com" },
 ]
 description = "A fast, keyboard-driven Terminal User Interface (TUI) for Cloudflare."
 readme = "README.md"
