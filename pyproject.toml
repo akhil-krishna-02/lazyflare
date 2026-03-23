@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lazyflare"
-version = "0.3.0"
+version = "2.0.0"
 authors = [
   { name="Akhil Krishna", email="your.email@example.com" },
 ]
