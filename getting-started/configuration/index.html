@@ -10,9 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://akhil-krishna-02.github.io/lazyflare/guide/getting-started/">
+        <link rel="canonical" href="https://akhil-krishna-02.github.io/lazyflare/getting-started/configuration/">
       
       
+        <link rel="prev" href="../installation/">
+      
+      
+        <link rel="next" href="../../features/navigation/">
       
       
         
@@ -23,7 +27,7 @@
     
     
       
-        <title>Getting Started - 🟠 LazyFlare</title>
+        <title>Configuration - 🟠 LazyFlare</title>
       
     
     
@@ -76,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#getting-started" class="md-skip">
+        <a href="#configuration" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Getting Started
+              Configuration
             
           </span>
         </div>
@@ -240,11 +244,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../getting-started/installation/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../installation/" class="md-tabs__link">
           
   
   
@@ -392,26 +398,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   
@@ -429,7 +440,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -447,7 +458,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/installation/" class="md-nav__link">
+      <a href="../installation/" class="md-nav__link">
         
   
   
@@ -472,10 +483,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../getting-started/configuration/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -491,6 +529,87 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-generating-an-api-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Generating an API Token
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-setting-the-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Setting the Token
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Setting the Token">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-a-configuration-file-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method A: Configuration File (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-b-environment-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method B: Environment Variable
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-running-the-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Running the App
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -931,10 +1050,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-installation" class="md-nav__link">
+  <a href="#1-generating-an-api-token" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Installation
+        1. Generating an API Token
       
     </span>
   </a>
@@ -942,32 +1061,49 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-generate-a-cloudflare-api-token" class="md-nav__link">
+  <a href="#2-setting-the-token" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Generate a Cloudflare API Token
+        2. Setting the Token
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Setting the Token">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-a-configuration-file-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method A: Configuration File (Recommended)
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#3-configuration" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#method-b-environment-variable" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Configuration
+        Method B: Environment Variable
       
     </span>
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#4-run-lazyflare" class="md-nav__link">
+  <a href="#3-running-the-app" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Run LazyFlare
+        3. Running the App
       
     </span>
   </a>
@@ -991,37 +1127,42 @@
 
 
 
-<h1 id="getting-started">Getting Started</h1>
-<p>Follow these steps to get LazyFlare running on your machine.</p>
-<h2 id="1-installation">1. Installation</h2>
-<p><strong>Using pipx (Recommended)</strong></p>
-<pre><code class="language-bash">pipx install lazyflare
-</code></pre>
-<p><strong>Using Homebrew (macOS / Linux)</strong></p>
-<pre><code class="language-bash">brew tap akhil-krishna-02/tap
-brew install lazyflare
-</code></pre>
-<h2 id="2-generate-a-cloudflare-api-token">2. Generate a Cloudflare API Token</h2>
-<p>You need a Custom API Token from Cloudflare to allow LazyFlare to read and write to your edge network.
-1. Go to your <a href="https://dash.cloudflare.com/profile/api-tokens">Cloudflare Dashboard Profile</a>.
-2. Click <strong>Create Token</strong> -&gt; <strong>Custom Token</strong>.
-3. Grant <strong>Edit</strong> permissions for the following:
-   - <code>Zone DNS</code>
-   - <code>Cache Purge</code>
-   - <code>Workers Scripts</code>
-   - <code>Workers KV Storage</code></p>
-<h2 id="3-configuration">3. Configuration</h2>
-<p>LazyFlare natively supports configuration files. This prevents your secrets from cluttering your terminal history or <code>.bashrc</code>.</p>
-<p>Create the configuration directory:</p>
+<h1 id="configuration">Configuration</h1>
+<p>LazyFlare requires a Cloudflare API Token to communicate with your account. It uses this token securely and never logs it or sends it anywhere other than the official Cloudflare API.</p>
+<hr />
+<h2 id="1-generating-an-api-token">1. Generating an API Token</h2>
+<ol>
+<li>Go to your <a href="https://dash.cloudflare.com/profile/api-tokens">Cloudflare Dashboard Profile</a>.</li>
+<li>Click <strong>Create Token</strong>.</li>
+<li>Scroll down and click <strong>Create Custom Token</strong>.</li>
+<li>Give it a memorable name like <code>LazyFlare CLI</code>.</li>
+<li>Under <strong>Permissions</strong>, grant <strong>Edit</strong> (or at least Read) access to the resources you want to manage. For the full experience, we recommend:</li>
+<li><code>Zone</code> -&gt; <code>DNS</code> -&gt; <code>Edit</code></li>
+<li><code>Zone</code> -&gt; <code>Cache Purge</code> -&gt; <code>Purge</code></li>
+<li><code>Account</code> -&gt; <code>Workers Scripts</code> -&gt; <code>Read</code> (or Edit)</li>
+<li><code>Account</code> -&gt; <code>Workers KV Storage</code> -&gt; <code>Read</code> (or Edit)</li>
+<li>Click <strong>Continue to summary</strong> and then <strong>Create Token</strong>.</li>
+<li><strong>Copy the token</strong>. You will only be shown this once!</li>
+</ol>
+<hr />
+<h2 id="2-setting-the-token">2. Setting the Token</h2>
+<p>LazyFlare supports two methods for securely supplying your token.</p>
+<h3 id="method-a-configuration-file-recommended">Method A: Configuration File (Recommended)</h3>
+<p>This is the safest method as it keeps the token out of your shell history and profile scripts. LazyFlare looks for a configuration file located at <code>~/.config/lazyflare/config</code>.</p>
+<p>Run the following commands in your terminal:</p>
 <pre><code class="language-bash">mkdir -p ~/.config/lazyflare
+echo &quot;CLOUDFLARE_API_TOKEN=your_super_secret_token_here&quot; &gt; ~/.config/lazyflare/config
 </code></pre>
-<p>Save your token in <code>~/.config/lazyflare/config</code>:</p>
-<pre><code class="language-ini">CLOUDFLARE_API_TOKEN=&quot;your_super_secret_token_here&quot;
+<h3 id="method-b-environment-variable">Method B: Environment Variable</h3>
+<p>If you prefer managing secrets via your shell environment (e.g., in your <code>~/.bashrc</code> or <code>~/.zshrc</code>), you can export the token directly:</p>
+<pre><code class="language-bash">export CLOUDFLARE_API_TOKEN=&quot;your_super_secret_token_here&quot;
 </code></pre>
-<h2 id="4-run-lazyflare">4. Run LazyFlare</h2>
-<p>Just launch the app from your terminal!</p>
+<hr />
+<h2 id="3-running-the-app">3. Running the App</h2>
+<p>Once your token is configured via either method, simply run:</p>
 <pre><code class="language-bash">lazyflare
 </code></pre>
+<p>You should see the application boot up, authenticate, and display your <code>Account ID</code> in the top left corner!</p>
 
 
 

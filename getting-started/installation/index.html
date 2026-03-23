@@ -10,9 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://akhil-krishna-02.github.io/lazyflare/guide/getting-started/">
+        <link rel="canonical" href="https://akhil-krishna-02.github.io/lazyflare/getting-started/installation/">
       
       
+        <link rel="prev" href="../..">
+      
+      
+        <link rel="next" href="../configuration/">
       
       
         
@@ -23,7 +27,7 @@
     
     
       
-        <title>Getting Started - 🟠 LazyFlare</title>
+        <title>Installation - 🟠 LazyFlare</title>
       
     
     
@@ -76,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#getting-started" class="md-skip">
+        <a href="#installation" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Getting Started
+              Installation
             
           </span>
         </div>
@@ -240,11 +244,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../getting-started/installation/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -392,26 +398,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   
@@ -429,7 +440,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -444,10 +455,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../getting-started/installation/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -463,6 +501,70 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#using-pipx-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using pipx (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-homebrew-macos-linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Homebrew (macOS / Linux)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From Source
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verifying-the-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifying the Installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -475,7 +577,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/configuration/" class="md-nav__link">
+      <a href="../configuration/" class="md-nav__link">
         
   
   
@@ -931,10 +1033,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-installation" class="md-nav__link">
+  <a href="#using-pipx-recommended" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Installation
+        Using pipx (Recommended)
       
     </span>
   </a>
@@ -942,10 +1044,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-generate-a-cloudflare-api-token" class="md-nav__link">
+  <a href="#using-homebrew-macos-linux" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Generate a Cloudflare API Token
+        Using Homebrew (macOS / Linux)
       
     </span>
   </a>
@@ -953,10 +1055,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-configuration" class="md-nav__link">
+  <a href="#from-source" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Configuration
+        From Source
       
     </span>
   </a>
@@ -964,10 +1066,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-run-lazyflare" class="md-nav__link">
+  <a href="#verifying-the-installation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Run LazyFlare
+        Verifying the Installation
       
     </span>
   </a>
@@ -991,37 +1093,42 @@
 
 
 
-<h1 id="getting-started">Getting Started</h1>
-<p>Follow these steps to get LazyFlare running on your machine.</p>
-<h2 id="1-installation">1. Installation</h2>
-<p><strong>Using pipx (Recommended)</strong></p>
+<h1 id="installation">Installation</h1>
+<p>LazyFlare is distributed as a standard Python package, making it easy to install across macOS, Linux, and Windows.</p>
+<hr />
+<h2 id="using-pipx-recommended">Using pipx (Recommended)</h2>
+<p><code>pipx</code> is the recommended way to install Python CLI applications because it installs them in isolated environments, avoiding conflicts with other Python packages on your system.</p>
 <pre><code class="language-bash">pipx install lazyflare
 </code></pre>
-<p><strong>Using Homebrew (macOS / Linux)</strong></p>
+<p>If you don't have <code>pipx</code> installed, you can install it via:</p>
+<pre><code class="language-bash"># macOS
+brew install pipx
+pipx ensurepath
+
+# Linux/Windows
+python -m pip install --user pipx
+python -m pipx ensurepath
+</code></pre>
+<hr />
+<h2 id="using-homebrew-macos-linux">Using Homebrew (macOS / Linux)</h2>
+<p>If you prefer managing your packages via Homebrew, we provide a custom tap:</p>
 <pre><code class="language-bash">brew tap akhil-krishna-02/tap
 brew install lazyflare
 </code></pre>
-<h2 id="2-generate-a-cloudflare-api-token">2. Generate a Cloudflare API Token</h2>
-<p>You need a Custom API Token from Cloudflare to allow LazyFlare to read and write to your edge network.
-1. Go to your <a href="https://dash.cloudflare.com/profile/api-tokens">Cloudflare Dashboard Profile</a>.
-2. Click <strong>Create Token</strong> -&gt; <strong>Custom Token</strong>.
-3. Grant <strong>Edit</strong> permissions for the following:
-   - <code>Zone DNS</code>
-   - <code>Cache Purge</code>
-   - <code>Workers Scripts</code>
-   - <code>Workers KV Storage</code></p>
-<h2 id="3-configuration">3. Configuration</h2>
-<p>LazyFlare natively supports configuration files. This prevents your secrets from cluttering your terminal history or <code>.bashrc</code>.</p>
-<p>Create the configuration directory:</p>
-<pre><code class="language-bash">mkdir -p ~/.config/lazyflare
+<hr />
+<h2 id="from-source">From Source</h2>
+<p>If you want to contribute to the project or run the absolute latest development version, you can install directly from the source code:</p>
+<pre><code class="language-bash">git clone https://github.com/akhil-krishna-02/lazyflare.git
+cd lazyflare
+pip install -e .
 </code></pre>
-<p>Save your token in <code>~/.config/lazyflare/config</code>:</p>
-<pre><code class="language-ini">CLOUDFLARE_API_TOKEN=&quot;your_super_secret_token_here&quot;
+<hr />
+<h2 id="verifying-the-installation">Verifying the Installation</h2>
+<p>Once installed, you can verify that it is working by running:</p>
+<pre><code class="language-bash">lazyflare --help
 </code></pre>
-<h2 id="4-run-lazyflare">4. Run LazyFlare</h2>
-<p>Just launch the app from your terminal!</p>
-<pre><code class="language-bash">lazyflare
-</code></pre>
+<p>You should see the UI launch (or show an authentication warning if you haven't configured your token yet).</p>
+<p><strong>Next Step:</strong> Head over to <a href="../configuration/">Configuration</a> to set up your Cloudflare API token.</p>
 
 
 

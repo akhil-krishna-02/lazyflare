@@ -10,9 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://akhil-krishna-02.github.io/lazyflare/guide/getting-started/">
+        <link rel="canonical" href="https://akhil-krishna-02.github.io/lazyflare/features/cache-management/">
       
       
+        <link rel="prev" href="../kv-and-d1/">
+      
+      
+        <link rel="next" href="../filtering-and-search/">
       
       
         
@@ -23,7 +27,7 @@
     
     
       
-        <title>Getting Started - 🟠 LazyFlare</title>
+        <title>Cache Management - 🟠 LazyFlare</title>
       
     
     
@@ -76,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#getting-started" class="md-skip">
+        <a href="#cache-management" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Getting Started
+              Cache Management
             
           </span>
         </div>
@@ -260,11 +264,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../features/navigation/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../navigation/" class="md-tabs__link">
           
   
   
@@ -507,26 +513,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -544,7 +555,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -562,7 +573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/navigation/" class="md-nav__link">
+      <a href="../navigation/" class="md-nav__link">
         
   
   
@@ -590,7 +601,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/dns-and-zones/" class="md-nav__link">
+      <a href="../dns-and-zones/" class="md-nav__link">
         
   
   
@@ -618,7 +629,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/workers-and-pages/" class="md-nav__link">
+      <a href="../workers-and-pages/" class="md-nav__link">
         
   
   
@@ -646,7 +657,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/kv-and-d1/" class="md-nav__link">
+      <a href="../kv-and-d1/" class="md-nav__link">
         
   
   
@@ -671,10 +682,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../features/cache-management/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cache Management
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -690,6 +728,37 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purging-the-zone-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purging the Zone Cache
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -702,7 +771,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/filtering-and-search/" class="md-nav__link">
+      <a href="../filtering-and-search/" class="md-nav__link">
         
   
   
@@ -931,43 +1000,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-installation" class="md-nav__link">
+  <a href="#purging-the-zone-cache" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Installation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-generate-a-cloudflare-api-token" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Generate a Cloudflare API Token
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Configuration
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-run-lazyflare" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Run LazyFlare
+        Purging the Zone Cache
       
     </span>
   </a>
@@ -991,37 +1027,19 @@
 
 
 
-<h1 id="getting-started">Getting Started</h1>
-<p>Follow these steps to get LazyFlare running on your machine.</p>
-<h2 id="1-installation">1. Installation</h2>
-<p><strong>Using pipx (Recommended)</strong></p>
-<pre><code class="language-bash">pipx install lazyflare
-</code></pre>
-<p><strong>Using Homebrew (macOS / Linux)</strong></p>
-<pre><code class="language-bash">brew tap akhil-krishna-02/tap
-brew install lazyflare
-</code></pre>
-<h2 id="2-generate-a-cloudflare-api-token">2. Generate a Cloudflare API Token</h2>
-<p>You need a Custom API Token from Cloudflare to allow LazyFlare to read and write to your edge network.
-1. Go to your <a href="https://dash.cloudflare.com/profile/api-tokens">Cloudflare Dashboard Profile</a>.
-2. Click <strong>Create Token</strong> -&gt; <strong>Custom Token</strong>.
-3. Grant <strong>Edit</strong> permissions for the following:
-   - <code>Zone DNS</code>
-   - <code>Cache Purge</code>
-   - <code>Workers Scripts</code>
-   - <code>Workers KV Storage</code></p>
-<h2 id="3-configuration">3. Configuration</h2>
-<p>LazyFlare natively supports configuration files. This prevents your secrets from cluttering your terminal history or <code>.bashrc</code>.</p>
-<p>Create the configuration directory:</p>
-<pre><code class="language-bash">mkdir -p ~/.config/lazyflare
-</code></pre>
-<p>Save your token in <code>~/.config/lazyflare/config</code>:</p>
-<pre><code class="language-ini">CLOUDFLARE_API_TOKEN=&quot;your_super_secret_token_here&quot;
-</code></pre>
-<h2 id="4-run-lazyflare">4. Run LazyFlare</h2>
-<p>Just launch the app from your terminal!</p>
-<pre><code class="language-bash">lazyflare
-</code></pre>
+<h1 id="cache-management">Cache Management</h1>
+<p>Clearing the Cloudflare Edge Cache is notoriously annoying to do via the web dashboard when deploying a quick hotfix to your production site. LazyFlare solves this by turning it into a single keystroke.</p>
+<hr />
+<h2 id="purging-the-zone-cache">Purging the Zone Cache</h2>
+<p>To instantly purge everything across all Edge nodes for a specific zone:</p>
+<ol>
+<li>Navigate to the <strong>DNS Zones</strong> resource.</li>
+<li>Select the domain you want to purge (e.g., <code>mysite.com</code>).</li>
+<li>Press <code>p</code> (for Purge).</li>
+<li>A large red confirmation modal will pop up warning you that you are about to purge the entire zone cache.</li>
+<li>Press <code>Enter</code> (Proceed).</li>
+</ol>
+<p>You will immediately see a <code>✔ Cache Purged via API!</code> message in the <strong>Commands &amp; Logs</strong> panel in the bottom right, confirming that the Cloudflare edge network has successfully dumped your cached assets.</p>
 
 
 

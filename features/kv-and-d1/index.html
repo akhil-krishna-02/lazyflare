@@ -10,9 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://akhil-krishna-02.github.io/lazyflare/guide/getting-started/">
+        <link rel="canonical" href="https://akhil-krishna-02.github.io/lazyflare/features/kv-and-d1/">
       
       
+        <link rel="prev" href="../workers-and-pages/">
+      
+      
+        <link rel="next" href="../cache-management/">
       
       
         
@@ -23,7 +27,7 @@
     
     
       
-        <title>Getting Started - 🟠 LazyFlare</title>
+        <title>KV & D1 Storage - 🟠 LazyFlare</title>
       
     
     
@@ -76,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#getting-started" class="md-skip">
+        <a href="#kv-d1-storage" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Getting Started
+              KV & D1 Storage
             
           </span>
         </div>
@@ -260,11 +264,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../features/navigation/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../navigation/" class="md-tabs__link">
           
   
   
@@ -507,26 +513,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -544,7 +555,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -562,7 +573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/navigation/" class="md-nav__link">
+      <a href="../navigation/" class="md-nav__link">
         
   
   
@@ -590,7 +601,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/dns-and-zones/" class="md-nav__link">
+      <a href="../dns-and-zones/" class="md-nav__link">
         
   
   
@@ -618,7 +629,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/workers-and-pages/" class="md-nav__link">
+      <a href="../workers-and-pages/" class="md-nav__link">
         
   
   
@@ -643,10 +654,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../features/kv-and-d1/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    KV & D1 Storage
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -662,6 +700,65 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#kv-store-key-value" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KV Store (Key-Value)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="KV Store (Key-Value)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deleting-namespaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deleting Namespaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d1-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D1 Databases
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -674,7 +771,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/cache-management/" class="md-nav__link">
+      <a href="../cache-management/" class="md-nav__link">
         
   
   
@@ -702,7 +799,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../features/filtering-and-search/" class="md-nav__link">
+      <a href="../filtering-and-search/" class="md-nav__link">
         
   
   
@@ -931,43 +1028,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-installation" class="md-nav__link">
+  <a href="#kv-store-key-value" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Installation
+        KV Store (Key-Value)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="KV Store (Key-Value)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deleting-namespaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deleting Namespaces
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#2-generate-a-cloudflare-api-token" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Generate a Cloudflare API Token
-      
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-configuration" class="md-nav__link">
+  <a href="#d1-databases" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Configuration
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-run-lazyflare" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Run LazyFlare
+        D1 Databases
       
     </span>
   </a>
@@ -991,37 +1083,24 @@
 
 
 
-<h1 id="getting-started">Getting Started</h1>
-<p>Follow these steps to get LazyFlare running on your machine.</p>
-<h2 id="1-installation">1. Installation</h2>
-<p><strong>Using pipx (Recommended)</strong></p>
-<pre><code class="language-bash">pipx install lazyflare
-</code></pre>
-<p><strong>Using Homebrew (macOS / Linux)</strong></p>
-<pre><code class="language-bash">brew tap akhil-krishna-02/tap
-brew install lazyflare
-</code></pre>
-<h2 id="2-generate-a-cloudflare-api-token">2. Generate a Cloudflare API Token</h2>
-<p>You need a Custom API Token from Cloudflare to allow LazyFlare to read and write to your edge network.
-1. Go to your <a href="https://dash.cloudflare.com/profile/api-tokens">Cloudflare Dashboard Profile</a>.
-2. Click <strong>Create Token</strong> -&gt; <strong>Custom Token</strong>.
-3. Grant <strong>Edit</strong> permissions for the following:
-   - <code>Zone DNS</code>
-   - <code>Cache Purge</code>
-   - <code>Workers Scripts</code>
-   - <code>Workers KV Storage</code></p>
-<h2 id="3-configuration">3. Configuration</h2>
-<p>LazyFlare natively supports configuration files. This prevents your secrets from cluttering your terminal history or <code>.bashrc</code>.</p>
-<p>Create the configuration directory:</p>
-<pre><code class="language-bash">mkdir -p ~/.config/lazyflare
-</code></pre>
-<p>Save your token in <code>~/.config/lazyflare/config</code>:</p>
-<pre><code class="language-ini">CLOUDFLARE_API_TOKEN=&quot;your_super_secret_token_here&quot;
-</code></pre>
-<h2 id="4-run-lazyflare">4. Run LazyFlare</h2>
-<p>Just launch the app from your terminal!</p>
-<pre><code class="language-bash">lazyflare
-</code></pre>
+<h1 id="kv-d1-storage">KV &amp; D1 Storage</h1>
+<p>Cloudflare's edge storage solutions (KV and D1) are fully accessible within LazyFlare.</p>
+<hr />
+<h2 id="kv-store-key-value">KV Store (Key-Value)</h2>
+<p>LazyFlare allows you to easily drill down into your global, low-latency KV namespaces.</p>
+<ol>
+<li>Select <strong>KV Store</strong> from the main navigation.</li>
+<li>Highlight a specific Namespace (e.g., <code>user_sessions</code>) and press <code>l</code> (or <code>Enter</code>) to <strong>Drill Down</strong>.</li>
+<li>The Details panel will immediately update to show the individual <strong>Keys</strong> inside that namespace.</li>
+<li>Press <code>h</code> to collapse back to the list of namespaces.</li>
+</ol>
+<h3 id="deleting-namespaces">Deleting Namespaces</h3>
+<p>If you need to drop an old KV Namespace, you can highlight it from the main list and press <code>d</code>. </p>
+<hr />
+<h2 id="d1-databases">D1 Databases</h2>
+<p>D1 is Cloudflare's serverless SQL database. </p>
+<p>Selecting <strong>D1 Databases</strong> will instantly list out all of your provisioned SQL databases across your account, including their UUIDs and current internal versions. </p>
+<p>Pressing <code>c</code> on a D1 row will instantly copy its <code>UUID</code>, which is highly useful when you need to quickly bind a new database to your <code>wrangler.toml</code> file!</p>
 
 
 
