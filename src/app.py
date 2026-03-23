@@ -1,14 +1,20 @@
 import os
 import asyncio
+import pyperclip
+from pathlib import Path
 from dotenv import load_dotenv
-from cloudflare import Cloudflare
+from cloudflare import AsyncCloudflare
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Static, ListItem, ListView, Label, DataTable, Input, RichLog, Button
 from textual.containers import Vertical, Horizontal
 from textual.screen import ModalScreen
 from textual import on, work, events
 
+# Load environment variables (from .env or config file)
 load_dotenv()
+config_path = Path.home() / ".config" / "lazyflare" / "config"
+if config_path.exists():
+    load_dotenv(config_path)
 
 # --- MODALS ---
 
@@ -35,22 +41,23 @@ class HelpScreen(ModalScreen):
         with Vertical(id="help-container"):
             yield Label("LAZYFLARE COMMANDS", id="help-title")
             yield Static(
-                " [yellow]Global[/]\n"
-                " q, /quit : Quit\n"
-                " r, /ref  : Refresh View\n"
-                " m, /mock : Toggle Mock Mode\n"
+                " [yellow]Global Navigation[/]\n"
+                " j/k      : Move Up/Down\n"
+                " h/l      : Go Back / Drill Down\n"
                 " tab      : Switch Pane\n"
                 " /        : Focus Filter / Command Bar\n"
                 " ?        : This Help Menu\n\n"
-                " [yellow]Command Bar Examples[/]\n"
-                " /help    : Open this menu\n"
-                " /purge   : Purge Cache (DNS view)\n"
-                " /delete  : Delete selected item\n\n"
-                " [yellow]Shortcuts[/]\n"
+                " [yellow]Commands & Actions[/]\n"
+                " c        : Copy Item JSON/ID\n"
                 " space    : Toggle Proxy (DNS)\n"
+                " p        : Purge Cache (DNS view)\n"
                 " d        : Delete Item\n"
                 " enter    : Drill down / View Value\n"
-                " esc      : Back / Clear",
+                " esc      : Back / Clear\n\n"
+                " [yellow]System[/]\n"
+                " q, /quit : Quit\n"
+                " r, /ref  : Refresh View\n"
+                " m, /mock : Toggle Mock Mode",
                 id="help-text"
             )
             yield Button("Close", id="close-help")
@@ -79,38 +86,46 @@ class Pane(Vertical): pass
 
 class LazyCloudflare(App):
     CSS = """
-    Screen { layout: horizontal; background: #000000; }
-    #left-col { width: 30%; height: 100%; }
-    #right-col { width: 70%; height: 100%; }
+    Screen { layout: vertical; background: #181825; } /* Catppuccin Mocha/Macchiato dark */
+    
+    #header { height: 3; dock: top; background: #11111b; border-bottom: solid #313244; padding: 0 1; }
+    #header-content { layout: horizontal; align: left middle; }
+    #app-title { text-style: bold; color: #f6821f; width: auto; margin-right: 4; } /* Cloudflare Orange */
+    #acc-status { color: #cdd6f4; width: auto; margin-right: 4; }
+    #mode-status { color: #a6e3a1; width: auto; }
 
-    Pane { border: round #555555; background: #000000; height: 1fr; padding: 0 1; }
-    Pane:focus-within { border: round #f6821f; }
-    #status-p { height: 35%; }
-    #res-p { height: 35%; }
-    #item-p { height: 30%; }
-    #main-p { height: 75%; }
-    #log-p { height: 25%; }
+    #main-content { layout: horizontal; height: 1fr; }
+    
+    #left-col { width: 25%; height: 100%; border-right: vkey #313244; }
+    #right-col { width: 75%; height: 100%; }
 
-    #app-banner {
-        color: #f6821f;
-        text-align: center;
-        text-style: bold;
-        margin-bottom: 1;
-    }
+    Pane { border: solid #313244; background: #1e1e2e; padding: 0 1; height: 1fr; }
+    Pane:focus-within { border: double #f6821f; }
+    
+    Pane > .pane-title { color: #f6821f; text-style: bold; margin-bottom: 1; }
 
-    DataTable { height: 100%; background: #000000; }
-    ListView { height: 100%; background: #000000; }
-    Input { border: none; background: #111111; margin-bottom: 1; }
+    #res-p { height: 100%; border: none; }
+    #main-p { height: 75%; border: none; border-bottom: hkey #313244; }
+    #log-p { height: 25%; border: none; }
+
+    DataTable { height: 100%; background: #1e1e2e; color: #cdd6f4; }
+    ListView { height: 100%; background: #1e1e2e; }
+    ListItem { padding: 0 1; color: #cdd6f4; }
+    ListItem:focus { background: #f6821f; color: #11111b; text-style: bold; }
+    
+    Input { border: none; background: #313244; margin-bottom: 1; color: #cdd6f4; }
+    Input:focus { border: tall #f6821f; }
 
     /* Modals */
     #modal-container, #help-container, #info-container {
-        width: 60; height: auto; background: #1e1e1e;
+        width: 60; height: auto; background: #181825;
         border: thick #f6821f; padding: 1; align: center middle;
     }
     #modal-msg, #help-title, #info-title { text-align: center; margin: 1; text-style: bold; color: #f6821f; }
     #modal-buttons { align: center middle; height: 3; }
-    #info-content { padding: 1; height: auto; max-height: 20; overflow-y: auto; }
-    Button { margin: 0 1; }
+    #info-content { padding: 1; height: auto; max-height: 20; overflow-y: auto; color: #a6e3a1; }
+    Button { margin: 0 1; background: #45475a; color: #cdd6f4; }
+    Button:hover { background: #f6821f; color: #11111b; }
     """
 
     BINDINGS = [
@@ -124,11 +139,16 @@ class LazyCloudflare(App):
         ("p", "purge_cache", "Purge Cache"),
         ("d", "delete_item", "Delete"),
         ("escape", "go_back", "Back"),
+        ("h", "go_back", "Go Back"),
+        ("l", "drill_down", "Expand"),
+        ("j", "cursor_down", "Down"),
+        ("k", "cursor_up", "Up"),
+        ("c", "copy_item", "Copy"),
     ]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.client = Cloudflare(api_token=os.getenv("CLOUDFLARE_API_TOKEN"))
+        self.client = AsyncCloudflare(api_token=os.getenv("CLOUDFLARE_API_TOKEN", "mock_token"))
         self.account_id = None
         self.current_view = "welcome"
         self.is_drilled_down = False
@@ -137,23 +157,17 @@ class LazyCloudflare(App):
         self.all_rows = []
 
     def compose(self) -> ComposeResult:
-        with Horizontal():
+        with Horizontal(id="header"):
+            with Horizontal(id="header-content"):
+                yield Static("🟠 LAZYFLARE", id="app-title")
+                yield Static("Account: [yellow]Authenticating...[/]", id="acc-status")
+                yield Static("Mode: [green]Real[/]", id="mode-status")
+
+        with Horizontal(id="main-content"):
+            # LEFT COLUMN: Resources
             with Vertical(id="left-col"):
-                with Pane(id="status-p") as p:
-                    p.border_title = "Status"
-                    yield Static(
-                        "██╗      █████╗ ███████╗██╗   ██╗███████╗██╗      █████╗ ██████╗ ███████╗\n"
-                        "██║     ██╔══██╗╚══███╔╝╚██╗ ██╔╝██╔════╝██║     ██╔══██╗██╔══██╗██╔════╝\n"
-                        "██║     ███████║  ███╔╝  ╚████╔╝ █████╗  ██║     ███████║██████╔╝█████╗  \n"
-                        "██║     ██╔══██║ ███╔╝    ╚██╔╝  ██╔══╝  ██║     ██╔══██║██╔══██╗██╔══╝  \n"
-                        "███████╗██║  ██║███████╗   ██║   ██║     ███████╗██║  ██║██║  ██║███████╗\n"
-                        "╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝",
-                        id="app-banner"
-                    )
-                    yield Static("Account: [bold yellow]Auth...[/]", id="acc-status")
-                    yield Static("Mode: [green]Real[/]", id="mode-status")
-                with Pane(id="res-p") as p:
-                    p.border_title = "Resources"
+                with Pane(id="res-p"):
+                    yield Label("RESOURCES", classes="pane-title")
                     yield ListView(
                         ListItem(Label("Workers"), id="nav-workers"),
                         ListItem(Label("DNS Zones"), id="nav-dns"),
@@ -164,18 +178,18 @@ class LazyCloudflare(App):
                         ListItem(Label("Zero Trust Tunnels"), id="nav-tunnels"),
                         id="res-list"
                     )
-                with Pane(id="item-p") as p:
-                    p.border_title = "Context"
-                    yield ListView(id="item-list")
 
+            # RIGHT COLUMN: Details & Commands
             with Vertical(id="right-col"):
-                with Pane(id="main-p") as p:
-                    p.border_title = "Main Console"
+                with Pane(id="main-p"):
+                    yield Label("DETAILS", classes="pane-title")
                     yield Input(placeholder="Type to filter or /command...", id="filter")
                     yield DataTable(id="data-table", cursor_type="row")
-                with Pane(id="log-p") as p:
-                    p.border_title = "Action Logs"
+                with Pane(id="log-p"):
+                    yield Label("COMMANDS & LOGS", classes="pane-title")
                     yield RichLog(id="logs", highlight=True, markup=True)
+        
+        # Footer for quick key bindings
         yield Footer()
 
     def write_log(self, msg: str):
@@ -185,7 +199,7 @@ class LazyCloudflare(App):
         if self.is_mock_mode: return "mock_account_12345"
         if self.account_id: return self.account_id
         try:
-            for a in self.client.accounts.list():
+            async for a in self.client.accounts.list():
                 self.account_id = a.id
                 return a.id
         except: return None
@@ -250,7 +264,7 @@ class LazyCloudflare(App):
         self.current_view = view_id
         table, items, main = self.query_one(DataTable), self.query_one("#item-list"), self.query_one("#main-p")
         table.clear(columns=True); items.clear(); self.all_rows = []; self.item_map.clear()
-        
+
         acc = await self.get_acc()
         if not acc: return
 
@@ -261,43 +275,47 @@ class LazyCloudflare(App):
         try:
             if self.current_view == "nav-workers":
                 table.add_columns("ID", "Modified")
-                for w in self.client.workers.scripts.list(account_id=acc):
+                async for w in self.client.workers.scripts.list(account_id=acc):
                     row = (w.id, getattr(w, 'modified_on', 'N/A'))
                     rk = table.add_row(*row); self.all_rows.append(row); items.append(ListItem(Label(w.id)))
                     self.item_map[str(rk)] = {"type": "worker", "id": w.id}
-            
+
             elif self.current_view == "nav-dns":
                 table.add_columns("Type", "Name", "Content", "Proxy", "ZoneID")
-                for z in self.client.zones.list():
+                async for z in self.client.zones.list():
                     items.append(ListItem(Label(z.name)))
-                    for r in self.client.dns.records.list(zone_id=z.id):
+                    async for r in self.client.dns.records.list(zone_id=z.id):
                         row = (r.type, r.name, r.content, "🟠" if r.proxied else "⚪", z.id)
                         rk = table.add_row(*row); self.all_rows.append(row)
-                        self.item_map[str(rk)] = {"id": r.id, "zone": z.id, "proxied": r.proxied, "type": "dns"}
+                        self.item_map[str(rk)] = {
+                            "id": r.id, "zone": z.id, "proxied": r.proxied, 
+                            "type": "dns", "record_type": r.type, 
+                            "name": r.name, "content": r.content
+                        }
 
             elif self.current_view == "nav-kv":
                 table.add_columns("Namespace ID", "Title")
-                for ns in self.client.kv.namespaces.list(account_id=acc):
+                async for ns in self.client.kv.namespaces.list(account_id=acc):
                     row = (ns.id, ns.title)
                     rk = table.add_row(*row); self.all_rows.append(row); items.append(ListItem(Label(ns.title)))
                     self.item_map[str(rk)] = {"type": "kv_ns", "id": ns.id, "title": ns.title}
 
             elif self.current_view == "nav-d1":
                 table.add_columns("DB Name", "UUID", "Version")
-                for db in self.client.d1.database.list(account_id=acc):
+                async for db in self.client.d1.database.list(account_id=acc):
                     row = (db.name, db.uuid, str(db.version))
                     rk = table.add_row(*row); self.all_rows.append(row)
                     self.item_map[str(rk)] = {"type": "d1", "id": db.uuid}
 
             elif self.current_view == "nav-pages":
                 table.add_columns("Project", "URL", "Created")
-                for p in self.client.pages.projects.list(account_id=acc):
+                async for p in self.client.pages.projects.list(account_id=acc):
                     row = (p.name, getattr(p, 'subdomain', 'N/A'), str(getattr(p, 'created_on', 'N/A'))[:10])
                     table.add_row(*row); self.all_rows.append(row)
-            
+
             elif self.current_view == "nav-tunnels":
                 table.add_columns("Tunnel Name", "ID", "Status")
-                for t in self.client.zero_trust.tunnels.list(account_id=acc):
+                async for t in self.client.zero_trust.tunnels.list(account_id=acc):
                     row = (t.name, t.id, t.status)
                     table.add_row(*row); self.all_rows.append(row)
 
@@ -317,7 +335,7 @@ class LazyCloudflare(App):
             for i in range(8):
                 row = ("A", f"site-{i}.com", f"1.1.1.{i}", "🟠" if i%2==0 else "⚪", "zone_123")
                 rk = table.add_row(*row); self.all_rows.append(row)
-                self.item_map[str(rk)] = {"type": "dns", "id": f"rec_{i}", "zone": "zone_123", "proxied": i%2==0}
+                self.item_map[str(rk)] = {"type": "dns", "id": f"rec_{i}", "zone": "zone_123", "proxied": i%2==0, "record_type": "A", "name": f"site-{i}.com", "content": f"1.1.1.{i}"}
         self.write_log(f"[bold orange]✔ (MOCK) Loaded {self.current_view[4:]} data.[/]")
 
     @on(DataTable.RowSelected)
@@ -339,29 +357,107 @@ class LazyCloudflare(App):
                     self.item_map[str(rk)] = {"type": "kv_key", "name": row[0]}
             else:
                 acc = await self.get_acc()
-                for k in self.client.kv.namespaces.keys.list(account_id=acc, namespace_id=data["id"]):
-                    row = (k.name, "None"); rk = table.add_row(*row); self.all_rows.append(row)
-                    self.item_map[str(rk)] = {"type": "kv_key", "name": k.name, "ns_id": data["id"]}
+                try:
+                    async for k in self.client.kv.namespaces.keys.list(account_id=acc, namespace_id=data["id"]):
+                        row = (k.name, "None"); rk = table.add_row(*row); self.all_rows.append(row)
+                        self.item_map[str(rk)] = {"type": "kv_key", "name": k.name, "ns_id": data["id"]}
+                except Exception as e:
+                    self.write_log(f"[red]✖ API Error: {str(e)}[/]")
 
         elif data["type"] == "kv_key":
             val = "{ 'id': 123 }" if self.is_mock_mode else "Real Value..."
             self.push_screen(InfoModal(f"Value: {data['name']}", val))
 
+    @work(exclusive=True)
+    async def action_toggle_proxy(self):
+        table = self.query_one(DataTable)
+        if table.cursor_row is None: return
+        data = self.item_map.get(str(list(table.rows.keys())[table.cursor_row]))
+        if not data or data.get("type") != "dns": return
+
+        if self.is_mock_mode:
+            self.write_log(f"[bold orange]✔ (MOCK) Toggled proxy for {data['name']}[/]")
+            return
+
+        try:
+            self.write_log(f"Toggling proxy for {data['name']}...")
+            await self.client.dns.records.edit(
+                zone_id=data["zone"],
+                dns_record_id=data["id"],
+                proxied=not data["proxied"],
+                type=data["record_type"],
+                name=data["name"],
+                content=data["content"]
+            )
+            self.write_log(f"[green]✔ Proxy toggled for {data['name']}[/]")
+            self.reload_current_view()
+        except Exception as e:
+            self.write_log(f"[red]✖ Toggle failed: {str(e)}[/]")
+
+    @work(exclusive=True)
     async def action_delete_item(self):
         table = self.query_one(DataTable)
         if table.cursor_row is None: return
-        if await self.push_screen_wait(ConfirmModal("DELETE this item?")):
-            table.remove_row(list(table.rows.keys())[table.cursor_row])
-            self.write_log("[green]✔ Item deleted.[/]")
+        data = self.item_map.get(str(list(table.rows.keys())[table.cursor_row]))
+        if not data: return
 
+        if await self.push_screen_wait(ConfirmModal(f"DELETE {data.get('type')}?")):
+            if self.is_mock_mode:
+                table.remove_row(list(table.rows.keys())[table.cursor_row])
+                self.write_log("[green]✔ (MOCK) Item deleted.[/]")
+                return
+
+            try:
+                if data["type"] == "dns":
+                    await self.client.dns.records.delete(dns_record_id=data["id"], zone_id=data["zone"])
+                elif data["type"] == "kv_ns":
+                    acc = await self.get_acc()
+                    await self.client.kv.namespaces.delete(namespace_id=data["id"], account_id=acc)
+                
+                table.remove_row(list(table.rows.keys())[table.cursor_row])
+                self.write_log("[green]✔ Item deleted via API.[/]")
+            except Exception as e:
+                self.write_log(f"[red]✖ Delete failed: {str(e)}[/]")
+
+    @work(exclusive=True)
     async def action_purge_cache(self):
         if self.current_view != "nav-dns": return
-        if await self.push_screen_wait(ConfirmModal("Purge Everything?")):
-            self.write_log("[green]✔ Cache Purged![/]")
+        table = self.query_one(DataTable)
+        if table.cursor_row is None: return
+        data = self.item_map.get(str(list(table.rows.keys())[table.cursor_row]))
+        if not data or "zone" not in data: return
+
+        if await self.push_screen_wait(ConfirmModal("Purge Everything for this zone?")):
+            if self.is_mock_mode:
+                self.write_log("[green]✔ (MOCK) Cache Purged![/]")
+                return
+            try:
+                await self.client.cache.purge(zone_id=data["zone"], purge_everything=True)
+                self.write_log("[green]✔ Cache Purged via API![/]")
+            except Exception as e:
+                self.write_log(f"[red]✖ Purge failed: {str(e)}[/]")
 
     def action_go_back(self):
         self.query_one("#filter").value = ""
         if self.is_drilled_down: self.reload_current_view()
+
+    def action_drill_down(self):
+        table = self.query_one(DataTable)
+        if table.cursor_row is not None:
+            table.action_select_cursor()
+
+    def action_copy_item(self):
+        table = self.query_one(DataTable)
+        if table.cursor_row is None: return
+        data = self.item_map.get(str(list(table.rows.keys())[table.cursor_row]))
+        if not data: return
+        
+        copy_text = str(data.get("name", data.get("id", "Unknown")))
+        try:
+            pyperclip.copy(copy_text)
+            self.write_log(f"[green]✔ Copied to clipboard: {copy_text}[/]")
+        except Exception as e:
+            self.write_log(f"[red]✖ Copy failed: {str(e)}[/]")
 
 def main(): LazyCloudflare().run()
 if __name__ == "__main__": main()

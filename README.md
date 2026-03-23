@@ -1,73 +1,95 @@
-# 🟠 LazyCloudflare
+# 🟠 LazyFlare
 
-A fast, keyboard-driven Terminal User Interface (TUI) for managing your Cloudflare stack. Built for developers who are tired of slow web dashboards.
+A terminal UI for managing Cloudflare resources, inspired by lazygit and LazyFire.
 
-Manage DNS, Workers, KV Storage, and R2 directly from your terminal.
+[![PyPI version](https://badge.fury.io/py/lazyflare.svg)](https://badge.fury.io/py/lazyflare)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![LazyCloudflare Demo](https://via.placeholder.com/800x400.png?text=LazyCloudflare+Terminal+UI)
-
-## Why use LazyCloudflare?
-
-The Cloudflare dashboard is powerful but can be slow for rapid tasks. `lazycloudflare` gives you Vim-style keybindings to perform complex actions instantly.
-
-- **Speed:** Filter hundreds of DNS records or KV keys instantly as you type (`/`).
-- **One-Key Actions:** Toggle Proxy (`Space`), Purge Cache (`p`), or enable Under Attack Mode (`u`) without loading a single webpage.
-- **Unified View:** See your Workers, DNS, R2, and KV all in one place.
+## Features
+- **Browse Cloudflare Resources:** Navigate Workers, DNS Zones, KV Namespaces, D1 Databases, and Pages seamlessly.
+- **Fast Navigation:** Expandable tree view for nested data (like KV keys inside a namespace).
+- **Real-time DNS Management:** Instantly toggle proxy status (🟠/⚪) on DNS records with a single keystroke.
+- **Cache Purging:** One-key execution to purge the entire edge cache for a selected Zone.
+- **Filter/Search:** Instantly filter across all panels to find specific records or workers.
+- **Vim-style keybindings:** Navigate with familiar `h/j/k/l` bindings.
+- **Copy Support:** Quickly copy record IDs, IP addresses, or JSON values directly to your system clipboard.
+- **Customizable Layout:** Uses the Textual framework to dynamically expand focused panels in a sleek dark theme.
 
 ## Installation
 
-### Method 1: Using pip (Recommended)
-You can install `lazycloudflare` globally using pip:
-
+### Python (pipx) - *Recommended*
 ```bash
-pip install lazycloudflare
+pipx install lazyflare
 ```
 
-### Method 2: From Source
+### Homebrew (macOS/Linux)
 ```bash
-git clone https://github.com/yourusername/lazycloudflare.git
-cd lazycloudflare
-pip install -r requirements.txt
-python src/app.py
+brew tap akhil-krishna-02/tap
+brew install lazyflare
 ```
 
-## Setup
+### From Source
+```bash
+git clone https://github.com/akhil-krishna-02/lazyflare.git
+cd lazyflare
+pip install -e .
+```
+
+## Quick Start
 
 You need a Cloudflare API Token to use this tool.
 1. Go to the [Cloudflare API Tokens page](https://dash.cloudflare.com/profile/api-tokens).
-2. Create a Custom Token with the following **Edit** permissions:
-   - `Workers Scripts`, `Workers KV Storage`, `Workers R2 Storage`, `Zone DNS`, `Zone Settings`.
-3. Set the token in your environment:
+2. Create a Custom Token with **Edit** permissions for `Zone DNS`, `Cache Purge`, `Workers Scripts`, etc.
 
+Login by setting your environment variable or config file:
 ```bash
 export CLOUDFLARE_API_TOKEN="your_token_here"
 ```
-*(You can also place this in a `.env` file in the directory where you run the tool).*
 
-## Usage
-
-Simply run:
+Run LazyFlare:
 ```bash
-lazycloudflare
+lazyflare
 ```
 
-### Global Keybindings
-- `q` : Quit
-- `r` : Refresh Data
-- `/` : Search / Filter current view
-- `Esc` : Go Back / Clear Search
+## Keybindings
 
-### DNS Keybindings
-- `Space` : Toggle Proxy (Orange Cloud / White Cloud)
-- `p` : Purge Everything (Cache) for the selected Zone
-- `u` : Toggle "Under Attack" Mode
+| Key | Action |
+|-----|--------|
+| `h` / `←` | Go Back / Collapse |
+| `l` / `→` | Drill Down / Expand |
+| `j` / `↓` | Move down in list |
+| `k` / `↑` | Move up in list |
+| `Tab` | Switch focus between panels |
+| `Enter` | Open resource / Fetch data |
+| `Space` | Toggle DNS Proxy Status (Orange Cloud) |
+| `p` | Purge Zone Cache |
+| `d` | Delete Item (with confirmation) |
+| `c` | Copy Item ID/Name to clipboard |
+| `/` | Filter current panel |
+| `Esc` | Back / Clear filter |
+| `m` | Toggle Mock Mode (Offline testing) |
+| `?` | Show Help menu |
+| `q` | Quit |
 
-### KV Keybindings
-- `Enter` : Drill down into a Namespace to view its Keys.
+## Configuration
 
-## Built With
-- [Textual](https://textual.textualize.io/) - The incredible Python TUI framework.
-- [Cloudflare Python SDK](https://github.com/cloudflare/cloudflare-python)
+LazyFlare natively supports configuration files for storing your token securely without cluttering your `.bashrc`.
+
+Create `~/.config/lazyflare/config`:
+
+```ini
+CLOUDFLARE_API_TOKEN=your_super_secret_token_here
+```
+
+## Requirements
+- Python 3.8+
+- Terminal with true color support (recommended)
+- A valid Cloudflare API Token
+
+## Acknowledgments
+- [lazygit](https://github.com/jesseduffield/lazygit) - For the original UI workflow inspiration.
+- [LazyFire](https://github.com/marjoballabani/lazyfire) - For the visual styling, formatting, and structural inspiration.
+- [Textual](https://github.com/Textualize/textual) - The incredible Python TUI framework powering the layout.
 
 ## License
-MIT
+MIT - see LICENSE
