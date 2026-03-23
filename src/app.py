@@ -262,14 +262,14 @@ class LazyCloudflare(App):
     async def load_view_data(self, view_id):
         self.is_drilled_down = False
         self.current_view = view_id
-        table, items, main = self.query_one(DataTable), self.query_one("#item-list"), self.query_one("#main-p")
-        table.clear(columns=True); items.clear(); self.all_rows = []; self.item_map.clear()
+        table, main = self.query_one(DataTable), self.query_one("#main-p")
+        table.clear(columns=True); self.all_rows = []; self.item_map.clear()
 
         acc = await self.get_acc()
         if not acc: return
 
         if self.is_mock_mode:
-            self.load_mock_data(table, items)
+            self.load_mock_data(table)
             return
 
         try:
@@ -277,13 +277,12 @@ class LazyCloudflare(App):
                 table.add_columns("ID", "Modified")
                 async for w in self.client.workers.scripts.list(account_id=acc):
                     row = (w.id, getattr(w, 'modified_on', 'N/A'))
-                    rk = table.add_row(*row); self.all_rows.append(row); items.append(ListItem(Label(w.id)))
+                    rk = table.add_row(*row); self.all_rows.append(row)
                     self.item_map[str(rk)] = {"type": "worker", "id": w.id}
 
             elif self.current_view == "nav-dns":
                 table.add_columns("Type", "Name", "Content", "Proxy", "ZoneID")
                 async for z in self.client.zones.list():
-                    items.append(ListItem(Label(z.name)))
                     async for r in self.client.dns.records.list(zone_id=z.id):
                         row = (r.type, r.name, r.content, "🟠" if r.proxied else "⚪", z.id)
                         rk = table.add_row(*row); self.all_rows.append(row)
@@ -297,7 +296,7 @@ class LazyCloudflare(App):
                 table.add_columns("Namespace ID", "Title")
                 async for ns in self.client.kv.namespaces.list(account_id=acc):
                     row = (ns.id, ns.title)
-                    rk = table.add_row(*row); self.all_rows.append(row); items.append(ListItem(Label(ns.title)))
+                    rk = table.add_row(*row); self.all_rows.append(row)
                     self.item_map[str(rk)] = {"type": "kv_ns", "id": ns.id, "title": ns.title}
 
             elif self.current_view == "nav-d1":
@@ -323,7 +322,7 @@ class LazyCloudflare(App):
         except Exception as e:
             self.write_log(f"[red]✖ API Error: {str(e)}[/]")
 
-    def load_mock_data(self, table, items):
+    def load_mock_data(self, table):
         if self.current_view == "nav-workers":
             table.add_columns("ID", "Modified")
             for i in range(5):
